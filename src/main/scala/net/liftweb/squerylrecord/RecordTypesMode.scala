@@ -46,14 +46,14 @@ trait RecordTypesMode extends QueryDsl {
     protected def mapBoolean2BooleanType(b: Boolean) = new BooleanField(null, b)
     protected def mapDate2DateType(b: Date) = error("not here yet")
 
-    protected implicit val sampleByte = null
+    protected implicit val sampleByte = error("not here yet")
     protected implicit val sampleInt = new IntField(null, 0)
     protected implicit val sampleString = new StringField(null, "")
     protected implicit val sampleDouble = new DoubleField(null, 0.0)
-    protected implicit val sampleFloat = null
+    protected implicit val sampleFloat = error("not here yet")
     protected implicit val sampleLong = new LongField(null, 1)
     protected implicit val sampleBoolean = new BooleanField(null, false)
-    protected implicit val sampleDate = null
+    protected implicit val sampleDate = error("not here yet")
 
 
     def createLeafNodeOfScalarIntType(i: IntField[_]) =
@@ -73,6 +73,7 @@ trait RecordTypesMode extends QueryDsl {
 
     def createLeafNodeOfScalarLongType(i: LongField[_]) =
         new SelectElementReference[LongType](FieldReferenceLinker.takeLastAccessedFieldReference.get)(createOutMapperLongType) with  NumericalExpression[LongType]
+  
     def createLeafNodeOfScalarLongOptionType(l: Option[LongField[_]]) = error("don't know what to do about Option types")
 
     def createLeafNodeOfScalarBooleanType(i: BooleanField[_]) =

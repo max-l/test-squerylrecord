@@ -1,0 +1,12 @@
+target*
+project/boot*
+project/build/target*
+lib*
+lib_managed*
+.idea/ant.xml
+.idea/compiler.xml
+.idea/workspace.xml
+.idea/vcs.xml
+.idea/uiDesigner.xml
+.idea/dictionaries/*
+.idea/copyright/*
