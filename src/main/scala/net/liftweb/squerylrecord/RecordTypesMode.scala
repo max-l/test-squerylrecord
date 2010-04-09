@@ -15,22 +15,27 @@ trait DummyRecord extends Record[DummyRecord] {
 object DummyRecord extends DummyRecord
 
 class SLongField(v: Long) extends LongField[DummyRecord](DummyRecord) with CustomType {
+  set(v)
   def wrappedValue: Any = v
 }
 
 class SIntField(v: Int) extends IntField[DummyRecord](DummyRecord) with CustomType {
+  set(v)
   def wrappedValue: Any = v
 }
 
 class SStringField(v: String) extends StringField[DummyRecord](DummyRecord, 128) with CustomType {
+  set(v)
   def wrappedValue: Any = v
 }
 
 class SDoubleField(v: Double) extends DoubleField[DummyRecord](DummyRecord) with CustomType {
+  set(v)
   def wrappedValue: Any = v
 }
 
 class SBooleanField(v: Boolean) extends BooleanField[DummyRecord](DummyRecord) with CustomType {
+  set(v)
   def wrappedValue: Any = v
 }
 
@@ -101,7 +106,7 @@ trait RecordTypesMode extends QueryDsl {
 
     def createLeafNodeOfScalarLongType(i: SLongField) =
         new SelectElementReference[LongType](FieldReferenceLinker.takeLastAccessedFieldReference.get)(createOutMapperLongType) with  NumericalExpression[LongType]
-  
+
     def createLeafNodeOfScalarLongOptionType(l: Option[SLongField]) = error("don't know what to do about Option types")
 
     def createLeafNodeOfScalarBooleanType(i: SBooleanField) =

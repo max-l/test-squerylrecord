@@ -32,21 +32,26 @@ object KickTheTires {
       TestSchema.create
     }
 
-
-    import TestSchema._
-
     transaction {
-      val b = books.insert(new Book)
-
-      //val sameB = books.where(b0 => b0.id === b.id)
-
-      from(books)(b0 => {
-
-        val ast = b0.id === b.id
-                        
-        where(ast)
-        select(b0)
-      })
+      go
     }
+  }
+
+  def go {
+    import TestSchema._
+    import net.liftweb.squerylrecord.RecordTypesMode._
+    
+    val b = books.insert(new Book)
+
+    val q = from(books)(b0 => {
+      where(b0.id === b.id)
+      select(b0)
+    })
+
+    val sameB = q.single
+
+    assert(sameB.id.value == b.id.value, "expected " + b.id + " got " + sameB.id)
+
+    //val sameB = books.where(b0 => b0.id === b.id) this version still has a bug...
   }
 }
