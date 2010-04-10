@@ -17,14 +17,14 @@ class Book extends Record[Book] with KeyedEntity[SLongField] {
 
     val authorId = new SLongField(1234)
   
-    //def author = TestSchema.authors.lookup(authorId : LongField[Author]) //(authorId, net.liftweb.squerylrecord.RecordTypesMode._)
+    def author = TestSchema.authors.lookup(authorId) //(authorId, net.liftweb.squerylrecord.RecordTypesMode._)
     //def publisher = TestSchema.publishers.lookup(publisherId)
 
-    def author = TestSchema.authors.where(a => a.id === authorId)  
+    //def author = TestSchema.authors.where(a => a.id === authorId)  
   
     def publisher = TestSchema.publishers.where(p => p.id === publisherId)  
 }
 
 object Book extends Book with MetaRecord[Book] {
-    def createRecord = new Book
+  def createRecord = new Book  
 }

@@ -1,9 +1,11 @@
 package test
 
-import model.{Book, TestSchema}
+import model.{Author, Book, TestSchema}
 import org.squeryl.adapters.H2Adapter
 import org.squeryl.{SessionFactory, Session}
 import java.sql.SQLException
+import org.squeryl.dsl.ast.TypedExpressionNode
+import net.liftweb.squerylrecord.SLongField
 
 
 object KickTheTires {
@@ -40,18 +42,46 @@ object KickTheTires {
   def go {
     import TestSchema._
     import net.liftweb.squerylrecord.RecordTypesMode._
+
+    //Session.currentSession.setLogger(msg => println(msg))
     
-    val b = books.insert(new Book)
+    val kenFollet = new Author
+    kenFollet.age.set(59)
+    kenFollet.name.set("Ken Follet")
+    authors.insert(kenFollet)
 
-    val q = from(books)(b0 => {
-      where(b0.id === b.id)
-      select(b0)
-    })
+    val alexandreDumas = new Author
+    alexandreDumas.age.set(70)
+    alexandreDumas.name.set("Alexandre Dumas")
+    authors.insert(alexandreDumas)
 
-    val sameB = q.single
+    val pillarsOfTherEarth = new Book
+    pillarsOfTherEarth.name.set("Pillars Of The Earth")    
+    pillarsOfTherEarth.authorId.setFromAny(kenFollet.id.value)
+    books.insert(pillarsOfTherEarth)
+    
+    val laReineMargot = new Book
+    laReineMargot.name.set("La Reine Margot")
+    laReineMargot.authorId.setFromAny(alexandreDumas.id.value)
+    books.insert(laReineMargot)
 
-    assert(sameB.id.value == b.id.value, "expected " + b.id + " got " + sameB.id)
+    //commit the inserts, so we can inspect the DB if things go wrong :
+    Session.currentSession.connection.commit
+    
+    val qLaReineLargot = from(books, authors)((b,a) =>
+      where((a.name like "Alex%") and b.authorId === a.id)
+      select(b)
+    )
 
-    //val sameB = books.where(b0 => b0.id === b.id) this version still has a bug...
-  }
+    //println(qLaReineLargot.statement)
+
+    val zBook = qLaReineLargot.single
+
+    assert(zBook.name.value == "La Reine Margot")
+    println(qLaReineLargot.single.name.value)
+
+    val alex = zBook.author.get
+
+    assert(alex.name.value == "Alexandre Dumas")
+  }  
 }
