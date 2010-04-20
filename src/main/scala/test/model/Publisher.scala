@@ -1,16 +1,16 @@
 package test.model
 
 import net.liftweb.record.{MetaRecord, Record}
-import net.liftweb.record.field.{LongField, StringField}
+import net.liftweb.record.field.{LongField, LongTypedField, StringField}
 import net.liftweb.squerylrecord.RecordTypesMode._
+import net.liftweb.squerylrecord.SquerylField
 import org.squeryl.{KeyedEntity, Query}
-import net.liftweb.squerylrecord.{SStringField, SLongField}
 
-class Publisher extends Record[Publisher] with KeyedEntity[SLongField] {
+class Publisher extends Record[Publisher] with KeyedEntity[LongTypedField] {
     def meta = Publisher
 
-    val id = new SLongField(1)
-    val name = new SStringField("")
+    val id = new LongField(this, 1) with SquerylField
+    val name = new StringField(this, "") with SquerylField
 
     def books: Query[Book] = TestSchema.books.where(_.publisherId === id)
 }

@@ -5,7 +5,6 @@ import org.squeryl.adapters.H2Adapter
 import org.squeryl.{SessionFactory, Session}
 import java.sql.SQLException
 import org.squeryl.dsl.ast.TypedExpressionNode
-import net.liftweb.squerylrecord.SLongField
 
 
 object KickTheTires {
@@ -45,24 +44,16 @@ object KickTheTires {
 
     //Session.currentSession.setLogger(msg => println(msg))
     
-    val kenFollet = new Author
-    kenFollet.age.set(59)
-    kenFollet.name.set("Ken Follet")
+    val kenFollet = new Author().age(59).name("Ken Follet")
     authors.insert(kenFollet)
 
-    val alexandreDumas = new Author
-    alexandreDumas.age.set(70)
-    alexandreDumas.name.set("Alexandre Dumas")
+    val alexandreDumas = new Author().age(70).name("Alexandre Dumas")
     authors.insert(alexandreDumas)
 
-    val pillarsOfTherEarth = new Book
-    pillarsOfTherEarth.name.set("Pillars Of The Earth")    
-    pillarsOfTherEarth.authorId.setFromAny(kenFollet.id.value)
+    val pillarsOfTherEarth = new Book().name("Pillars Of The Earth").authorId(kenFollet.id.value)
     books.insert(pillarsOfTherEarth)
     
-    val laReineMargot = new Book
-    laReineMargot.name.set("La Reine Margot")
-    laReineMargot.authorId.setFromAny(alexandreDumas.id.value)
+    val laReineMargot = new Book().name("La Reine Margot").authorId(alexandreDumas.id.value)
     books.insert(laReineMargot)
 
     //commit the inserts, so we can inspect the DB if things go wrong :
