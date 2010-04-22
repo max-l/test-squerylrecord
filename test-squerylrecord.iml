@@ -26,12 +26,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Maven: net.liftweb:lift-record:2.0-scala280-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="Maven: net.liftweb:lift-mapper:2.0-scala280-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="Maven: net.liftweb:lift-webkit:2.0-scala280-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="Maven: net.liftweb:lift-util:2.0-scala280-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="Maven: net.liftweb:lift-actor:2.0-scala280-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: net.liftweb:lift-common:2.0-scala280-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.slf4j:slf4j-api:1.5.11" level="project" />
     <orderEntry type="library" exported="" name="Maven: log4j:log4j:1.2.14" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.scala-lang:scala-library:2.8.0.Beta1" level="project" />
@@ -54,6 +52,24 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:servlet-api:2.5-20081211" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scala-lang:scala-compiler:2.8.0.Beta1-RC8" level="project" />
     <orderEntry type="module" module-name="Main" exported="" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lift-m/framework/lift-persistence/lift-record/target/lift-record-2.0-scala280-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lift-m/framework/lift-base/lift-common/target/lift-common-2.0-scala280-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
