@@ -5,6 +5,8 @@ import org.squeryl.adapters.H2Adapter
 import org.squeryl.{SessionFactory, Session}
 import java.sql.SQLException
 import org.squeryl.dsl.ast.TypedExpressionNode
+import org.squeryl.internals.FieldMetaData
+import net.liftweb.squerylrecord.RecordMetaDataFactory
 
 
 object KickTheTires {
@@ -18,6 +20,8 @@ object KickTheTires {
 
   def main(args : Array[String]) : Unit = {
     Class.forName("org.h2.Driver");
+
+    FieldMetaData.factory = new RecordMetaDataFactory
     
     SessionFactory.concreteFactory = Some(() => createH2TestConnection)
 
