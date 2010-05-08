@@ -66,8 +66,6 @@ class RecordMetaDataFactory extends FieldMetaDataFactory {
       colAnnotation,
       isOptimisticCounter) {
 
-      override lazy val isPrimaryKey = metaField.isInstanceOf[PrimaryKeyField]
-
       private def fieldFor(o: AnyRef) = getter.get.invoke(o).asInstanceOf[TypedField[_]]
 
       override def setFromResultSet(target: AnyRef, rs: ResultSet, index: Int) =

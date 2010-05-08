@@ -2,15 +2,13 @@ package test.model
 
 import net.liftweb.record.{MetaRecord, Record}
 import net.liftweb.record.field.{IntField, StringField, LongField, LongTypedField}
-import net.liftweb.squerylrecord.PrimaryKeyField
+import net.liftweb.squerylrecord.KeyedRecord
 import org.squeryl.PrimitiveTypeMode._
 
-import org.squeryl.KeyedEntity
-
-class Book extends Record[Book] with KeyedEntity[Long] {
+class Book extends Record[Book] with KeyedRecord[Long] {
     def meta = Book
 
-    val id = new LongField(this, 100) with PrimaryKeyField
+    val id = new LongField(this, 100)
     val name = new StringField(this, "")
     val publishedInYear = new IntField(this, 1990)
 
