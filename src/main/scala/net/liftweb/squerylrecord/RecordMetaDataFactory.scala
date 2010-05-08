@@ -2,33 +2,31 @@ package net.liftweb.squerylrecord
 
 import java.lang.reflect.{Method, Field}
 import java.lang.annotation.Annotation
+import java.sql.ResultSet
+import java.util.Date
+import net.liftweb.common.Box
+import net.liftweb.record.{TypedField, BaseField}
 import net.liftweb.record.field._
 import org.squeryl.annotations.Column
 import org.squeryl.internals.{FieldMetaData, PosoMetaData, FieldMetaDataFactory}
-import java.sql.ResultSet
-import net.liftweb.record.{TypedField, BaseField}
 
 class RecordMetaDataFactory extends FieldMetaDataFactory {
 
   def build(parentMetaData: PosoMetaData[_], name: String, property: (Option[Field], Option[Method], Option[Method], Set[Annotation]), sampleInstance4OptionTypeDeduction: AnyRef, isOptimisticCounter: Boolean) = {
     
-    val field  = property._1
-    val getter = property._2
-    val setter = property._3
-    val annotations = property._4
+    val (field, getter, setter, annotations) = property
     val colAnnotation = annotations.find(a => a.isInstanceOf[Column]).map(a => a.asInstanceOf[Column])
 
     val recordFieldType = field.get.getType
 
-    val fieldsValueType =
-      if(classOf[LongField[_]].isAssignableFrom(recordFieldType))
-        classOf[Long]
-      else if(classOf[StringField[_]].isAssignableFrom(recordFieldType))
-        classOf[String]
-      else if(classOf[IntField[_]].isAssignableFrom(recordFieldType))
-        classOf[Int]
-      else
-        error("unsupported field type : " + recordFieldType.getName)
+    val fieldsValueType = 
+        if (classOf[BooleanTypedField].isAssignableFrom(recordFieldType)) classOf[Boolean]
+        else if (classOf[DateTimeTypedField].isAssignableFrom(recordFieldType)) classOf[Date]
+        else if (classOf[DoubleTypedField].isAssignableFrom(recordFieldType)) classOf[Double]
+        else if (classOf[IntTypedField].isAssignableFrom(recordFieldType)) classOf[Int]
+        else if (classOf[LongTypedField].isAssignableFrom(recordFieldType)) classOf[Long]
+        else if (classOf[StringTypedField].isAssignableFrom(recordFieldType)) classOf[String]
+        else error("unsupported field type : " + recordFieldType.getName)
 
 
     new FieldMetaData(
@@ -48,21 +46,17 @@ class RecordMetaDataFactory extends FieldMetaDataFactory {
       val recordField = field.get
 
       private def _typedField(record: AnyRef) =
-        recordField.get(record).asInstanceOf[TypedField[_]]      
+        recordField.get(record).asInstanceOf[TypedField[AnyRef]]
 
-      override def setFromResultSet(target: AnyRef, rs: ResultSet, index: Int) = {
-        
+      override def setFromResultSet(target: AnyRef, rs: ResultSet, index: Int) = {        
         val v = resultSetHandler(rs, index)
-        _typedField(target).setFromAny(v)
+
+          println("!!!!!!!!!! setFromResultSet(" + target.toString + ", rs, " + index + ") v=" + v.toString)
+
+        _typedField(target).setFromAny(Box!!v)
       }
 
-      override def get(o: AnyRef) = {
-        val v = _typedField(o).value
-        if(v == null)
-          null
-        else
-          v.asInstanceOf[AnyRef]
-      }
+      override def get(o: AnyRef) = _typedField(o).valueBox openOr null
     }
   }
 }
