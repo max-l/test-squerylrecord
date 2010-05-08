@@ -1,9 +1,9 @@
 package test
 
 import java.sql.SQLException
-import org.squeryl.{SessionFactory, Session}
+import org.squeryl.{SessionFactory, Session, View}
 import org.squeryl.adapters.H2Adapter
-import org.squeryl.internals.FieldMetaData
+import org.squeryl.internals.{FieldMetaData, PosoMetaData}
 import net.liftweb.common.{Log4j, Loggable}
 import net.liftweb.squerylrecord.RecordMetaDataFactory
 
@@ -50,9 +50,21 @@ object KickTheTires extends Loggable {
     }
   }
 
+  def dumpPosoMetaData[T](what: View[T]): Unit = {
+    val posoMetaData: PosoMetaData[T] = what.getClass.getMethod("posoMetaData").invoke(what).asInstanceOf[PosoMetaData[T]]
+    println("PosoMetaData for " + posoMetaData.clasz + ", primaryKey = " + posoMetaData.primaryKey)
+    for (fld <- posoMetaData.fieldsMetaData)
+      println(" - " + fld.nameOfProperty + " fieldType=" + fld.fieldType +
+              " isOption=" + fld.isOption + " isPrimaryKey=" + fld.isPrimaryKey)
+  }
+
   def go {
     import TestSchema._
     import org.squeryl.PrimitiveTypeMode._
+
+    dumpPosoMetaData(authors)
+    dumpPosoMetaData(books)
+    dumpPosoMetaData(publishers)
 
     //Session.currentSession.setLogger(msg => println(msg))
     
@@ -62,17 +74,17 @@ object KickTheTires extends Loggable {
     val alexandreDumas = new Author().age(70).name("Alexandre Dumas")
     authors.insert(alexandreDumas)
 
-    val pillarsOfTherEarth = new Book().name("Pillars Of The Earth").authorId(kenFollet.pk.value)
-    books.insert(pillarsOfTherEarth)
+    val pillarsOfTheEarth = new Book().name("Pillars Of The Earth").authorId(kenFollet.id.value)
+    books.insert(pillarsOfTheEarth)
     
-    val laReineMargot = new Book().name("La Reine Margot").authorId(alexandreDumas.pk.value)
+    val laReineMargot = new Book().name("La Reine Margot").authorId(alexandreDumas.id.value)
     books.insert(laReineMargot)
 
     //commit the inserts, so we can inspect the DB if things go wrong :
     Session.currentSession.connection.commit
     
     val qLaReineLargot = from(books, authors)((b,a) =>
-      where((a.name.value like "Alex%") and b.authorId.value === a.pk.value)
+      where((a.name.value like "Alex%") and b.authorId.value === a.id.value)
       select(b)
     )
 
