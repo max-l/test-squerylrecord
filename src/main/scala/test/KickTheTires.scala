@@ -1,72 +1,45 @@
 package test
 
 import java.sql.SQLException
-import org.squeryl.{SessionFactory, Session, View}
 import org.squeryl.adapters.H2Adapter
-import org.squeryl.internals.{FieldMetaData, PosoMetaData}
-import net.liftweb.common.{Log4j, Loggable}
-import net.liftweb.squerylrecord.RecordMetaDataFactory
+import net.liftweb.common.{Empty, Log4j, Loggable}
+import net.liftweb.mapper.{DB, DefaultConnectionIdentifier, StandardDBVendor}
+import net.liftweb.squerylrecord.SquerylRecord
 
 import model.{Author, Book, TestSchema}
 
 object KickTheTires extends Loggable {
-
-  def createH2TestConnection = {
-    val sess = Session.create(
-      java.sql.DriverManager.getConnection("jdbc:h2:~/test", "sa", ""),
-      new H2Adapter
-    )
-    sess.setLogger(s => logger.info(s))
-    sess
-  }
-
-  def initDB = {
-    Class.forName("org.h2.Driver");
-
-    FieldMetaData.factory = new RecordMetaDataFactory
-    
-    SessionFactory.concreteFactory = Some(() => createH2TestConnection)
-  }
-
   def main(args : Array[String]) : Unit = {
       
-    Log4j.withDefault
-    initDB
+    Log4j.withConfig(Log4j.defaultProps.replace("INFO", "DEBUG"))
 
-    import org.squeryl.PrimitiveTypeMode._
+    val dbVendor = new StandardDBVendor("org.h2.Driver", "jdbc:h2:test", Empty, Empty)
+    try {
+      DB.defineConnectionManager(DefaultConnectionIdentifier, dbVendor)
+      SquerylRecord.init(() => new H2Adapter)
 
-    transaction {
-      try {
-        TestSchema.drop // we normally *NEVER* do this !!
+      import org.squeryl.PrimitiveTypeMode._
+
+      DB.use(DefaultConnectionIdentifier) { _ =>
+        try {
+          TestSchema.drop // we normally *NEVER* do this !!
+        } catch {
+          case e:SQLException => println(" schema does not yet exist :" + e.getMessage)
+        }
+        TestSchema.create
       }
-      catch {
-        case e:SQLException => println(" schema does not yet exist :" + e.getMessage)
+
+      DB.use(DefaultConnectionIdentifier) { _ =>
+        go
       }
-      TestSchema.create
+    } finally {
+      dbVendor.closeAllConnections_!
     }
-
-    transaction {
-      go
-    }
-  }
-
-  def dumpPosoMetaData[T](what: View[T]): Unit = {
-    val posoMetaData: PosoMetaData[T] = what.getClass.getMethod("posoMetaData").invoke(what).asInstanceOf[PosoMetaData[T]]
-    println("PosoMetaData for " + posoMetaData.clasz + ", primaryKey = " + posoMetaData.primaryKey)
-    for (fld <- posoMetaData.fieldsMetaData)
-      println(" - " + fld.nameOfProperty + " fieldType=" + fld.fieldType +
-              " isOption=" + fld.isOption + " isPrimaryKey=" + fld.isPrimaryKey)
   }
 
   def go {
     import TestSchema._
     import org.squeryl.PrimitiveTypeMode._
-
-    dumpPosoMetaData(authors)
-    dumpPosoMetaData(books)
-    dumpPosoMetaData(publishers)
-
-    //Session.currentSession.setLogger(msg => println(msg))
     
     val kenFollet = new Author().age(59).name("Ken Follet")
     authors.insert(kenFollet)
@@ -74,17 +47,17 @@ object KickTheTires extends Loggable {
     val alexandreDumas = new Author().age(70).name("Alexandre Dumas")
     authors.insert(alexandreDumas)
 
-    val pillarsOfTheEarth = new Book().name("Pillars Of The Earth").authorId(kenFollet.id.value)
+    val pillarsOfTheEarth = new Book().name("Pillars Of The Earth").authorId(kenFollet.idField.value)
     books.insert(pillarsOfTheEarth)
     
-    val laReineMargot = new Book().name("La Reine Margot").authorId(alexandreDumas.id.value)
+    val laReineMargot = new Book().name("La Reine Margot").authorId(alexandreDumas.idField.value)
     books.insert(laReineMargot)
 
     //commit the inserts, so we can inspect the DB if things go wrong :
-    Session.currentSession.connection.commit
+    DB.currentConnection.foreach(_.connection.commit)
     
     val qLaReineLargot = from(books, authors)((b,a) =>
-      where((a.name.value like "Alex%") and b.authorId.value === a.id.value)
+      where((a.name.value like "Alex%") and b.authorId.value === a.idField.value)
       select(b)
     )
 

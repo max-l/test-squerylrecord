@@ -12,7 +12,8 @@ class LiftProject(info: ProjectInfo) extends DefaultWebProject(info) {
     override def libraryDependencies = Set(
         "net.liftweb" % "lift-webkit" % liftVersion % "compile->default",
         "net.liftweb" % "lift-record" % liftVersion % "compile->default",
-        "org.squeryl" % "squeryl_2.8.0.Beta1" % "0.9.3_lift" % "compile->runtime",
+        "net.liftweb" % "lift-squeryl-record" % liftVersion % "compile->default",
+        "org.squeryl" % "squeryl_2.8.0.Beta1" % "0.9.4beta2" % "compile->runtime",
         "org.mortbay.jetty" % "jetty" % "6.1.22" % "test->default",
         "com.h2database" % "h2" % "1.2.121",
         "cglib" % "cglib-nodep" % "2.2"
