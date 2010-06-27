@@ -18,7 +18,7 @@ object KickTheTires extends Loggable {
       DB.defineConnectionManager(DefaultConnectionIdentifier, dbVendor)
       SquerylRecord.init(() => new H2Adapter)
 
-      import org.squeryl.PrimitiveTypeMode._
+      import net.liftweb.squerylrecord.RecordTypeMode._
 
       DB.use(DefaultConnectionIdentifier) { _ =>
         try {
@@ -39,7 +39,7 @@ object KickTheTires extends Loggable {
 
   def go {
     import TestSchema._
-    import org.squeryl.PrimitiveTypeMode._
+    import net.liftweb.squerylrecord.RecordTypeMode._
     
     val kenFollet = new Author().age(59).name("Ken Follet")
     authors.insert(kenFollet)
@@ -47,17 +47,17 @@ object KickTheTires extends Loggable {
     val alexandreDumas = new Author().age(70).name("Alexandre Dumas")
     authors.insert(alexandreDumas)
 
-    val pillarsOfTheEarth = new Book().name("Pillars Of The Earth").authorId(kenFollet.idField.value)
+    val pillarsOfTheEarth = new Book().name("Pillars Of The Earth").authorId(kenFollet.id)
     books.insert(pillarsOfTheEarth)
     
-    val laReineMargot = new Book().name("La Reine Margot").authorId(alexandreDumas.idField.value)
+    val laReineMargot = new Book().name("La Reine Margot").authorId(alexandreDumas.id)
     books.insert(laReineMargot)
 
     //commit the inserts, so we can inspect the DB if things go wrong :
     DB.currentConnection.foreach(_.connection.commit)
     
     val qLaReineLargot = from(books, authors)((b,a) =>
-      where((a.name.value like "Alex%") and b.authorId.value === a.idField.value)
+      where((a.name.value like "Alex%") and b.authorId === a.id)
       select(b)
     )
 
@@ -66,10 +66,17 @@ object KickTheTires extends Loggable {
     val zBook = qLaReineLargot.single
 
     assert(zBook.name.value == "La Reine Margot")
-    println(qLaReineLargot.single.name.value)
+    println(qLaReineLargot.single.name)
 
     val alex = zBook.author.get
 
     assert(alex.name.value == "Alexandre Dumas")
+
+    val option70 = from(authors)(a=>
+      where(a.id === alex.id)
+      select(&(a.age))
+    )
+
+    assert(option70.single.get == 70)
   }  
 }

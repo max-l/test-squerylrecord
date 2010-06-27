@@ -3,9 +3,9 @@ package test.model
 import net.liftweb.record.{MetaRecord, Record}
 import net.liftweb.record.field.{LongField, LongTypedField, StringField}
 import net.liftweb.squerylrecord.KeyedRecord
+import net.liftweb.squerylrecord.RecordTypeMode._
 import org.squeryl.Query
 import org.squeryl.annotations.Column
-import org.squeryl.PrimitiveTypeMode._
 
 class Publisher extends Record[Publisher] with KeyedRecord[Long] {
     def meta = Publisher
@@ -14,7 +14,7 @@ class Publisher extends Record[Publisher] with KeyedRecord[Long] {
     val idField = new LongField(this, 1)
     val name = new StringField(this, "")
 
-    def books: Query[Book] = TestSchema.books.where(_.publisherId.value === idField.value)
+    def books: Query[Book] = TestSchema.books.where(_.publisherId === id)
 }
 
 object Publisher extends Publisher with MetaRecord[Publisher] {

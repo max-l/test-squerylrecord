@@ -3,8 +3,8 @@ package test.model
 import net.liftweb.record.{MetaRecord, Record}
 import net.liftweb.record.field.{IntField, StringField, LongField, LongTypedField}
 import net.liftweb.squerylrecord.KeyedRecord
+import net.liftweb.squerylrecord.RecordTypeMode._
 import org.squeryl.annotations.Column
-import org.squeryl.PrimitiveTypeMode._
 
 class Book extends Record[Book] with KeyedRecord[Long] {
     def meta = Book
@@ -21,9 +21,9 @@ class Book extends Record[Book] with KeyedRecord[Long] {
     def author = TestSchema.authors.lookup(authorId.value)
     //def publisher = TestSchema.publishers.lookup(publisherId)
 
-    //def author = TestSchema.authors.where(a => a.idField.value === authorId.value)
+    //def author = TestSchema.authors.where(a => a.id === authorId)
   
-    def publisher = TestSchema.publishers.where(p => p.idField.value === publisherId.value)
+    def publisher = TestSchema.publishers.where(p => p.id === publisherId)
 }
 
 object Book extends Book with MetaRecord[Book] {
