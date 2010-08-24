@@ -1,7 +1,8 @@
 package bootstrap.liftweb
 
+import scala.util.control.Exception.ultimately
 import net.liftweb.common._
-import net.liftweb.util.Props
+import net.liftweb.util.{LoanWrapper, Props}
 import net.liftweb.http.{LiftRules, S}
 import net.liftweb.mapper.{DB, DefaultConnectionIdentifier, StandardDBVendor}
 import net.liftweb.sitemap.{Menu, SiteMap, Loc}
@@ -37,6 +38,9 @@ class Boot {
     LiftRules.setSiteMap(SiteMap(entries:_*))
     
     S.addAround(DB.buildLoanWrapper(DefaultConnectionIdentifier::Nil))
+    S.addAround(new LoanWrapper {
+        def apply[T](f: => T): T = ultimately(println(S.getAllNotices))(f)
+    })
   }
 }
 

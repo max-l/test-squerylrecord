@@ -7,7 +7,7 @@ import net.liftweb.squerylrecord.RecordTypeMode._
 import org.squeryl.Query
 import org.squeryl.annotations.Column
 
-class Publisher extends Record[Publisher] with KeyedRecord[Long] {
+class Publisher private () extends Record[Publisher] with KeyedRecord[Long] {
     def meta = Publisher
 
     @Column(name="id")
@@ -17,6 +17,5 @@ class Publisher extends Record[Publisher] with KeyedRecord[Long] {
     def books: Query[Book] = TestSchema.books.where(_.publisherId === id)
 }
 
-object Publisher extends Publisher with MetaRecord[Publisher] {
-    def createRecord = new Publisher
-}
+object Publisher extends Publisher with MetaRecord[Publisher]
+

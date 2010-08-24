@@ -41,16 +41,16 @@ object KickTheTires extends Loggable {
     import TestSchema._
     import net.liftweb.squerylrecord.RecordTypeMode._
     
-    val kenFollet = new Author().age(59).name("Ken Follet")
+    val kenFollet = Author.createRecord.age(59).name("Ken Follet")
     authors.insert(kenFollet)
 
-    val alexandreDumas = new Author().age(70).name("Alexandre Dumas")
+    val alexandreDumas = Author.createRecord.age(70).name("Alexandre Dumas")
     authors.insert(alexandreDumas)
 
-    val pillarsOfTheEarth = new Book().name("Pillars Of The Earth").authorId(kenFollet.id)
+    val pillarsOfTheEarth = Book.createRecord.name("Pillars Of The Earth").authorId(kenFollet.id)
     books.insert(pillarsOfTheEarth)
     
-    val laReineMargot = new Book().name("La Reine Margot").authorId(alexandreDumas.id)
+    val laReineMargot = Book.createRecord.name("La Reine Margot").authorId(alexandreDumas.id)
     books.insert(laReineMargot)
 
     //commit the inserts, so we can inspect the DB if things go wrong :
