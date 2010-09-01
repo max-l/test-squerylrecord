@@ -19,5 +19,5 @@ class Author extends Record[Author] with KeyedRecord[Long] {
 }
 
 object Author extends Author with MetaRecord[Author] {
-    def createRecord = new Author
+    //def createRecord = new Author
 }

@@ -3,6 +3,7 @@
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
+  <component name="IdProvider" IDEtalkID="1B99BDE44BE656247505DA01F7A4263A" />
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
     <option name="OPTION_SCOPE" value="protected" />
@@ -24,5 +25,6 @@
     <option name="projectName" value="test-squerylrecord" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK" />
+  <component name="WebServicesPlugin" addRequiredLibraries="true" />
 </project>
 

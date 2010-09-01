@@ -18,5 +18,5 @@ class Publisher extends Record[Publisher] with KeyedRecord[Long] {
 }
 
 object Publisher extends Publisher with MetaRecord[Publisher] {
-    def createRecord = new Publisher
+    //def createRecord = new Publisher
 }
