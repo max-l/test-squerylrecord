@@ -45,10 +45,12 @@ object KickTheTires extends Loggable {
 
   trait RecordTypeModeBaseOverride4MandatoryEnums extends RecordTypeMode {
 
-    implicit def enum2EnumExpr(l: TypedField[Enumeration#Value]) = {
+    implicit def enum2EnumExpr(l: EnumTypedField[Enumeration]) = {
       val n = FieldReferenceLinker.takeLastAccessedFieldReference.get
       new SelectElementReference[Enumeration#Value](n)(n.createEnumerationMapper) with  EnumExpression[Enumeration#Value]
     }
+
+
 
 //    implicit def enum2EnumExpr[E <: Enumeration](l: EnumField[_,E]) = {
 //      val n = FieldReferenceLinker.takeLastAccessedFieldReference.get
@@ -108,18 +110,27 @@ object KickTheTires extends Loggable {
 
     assert(option70.single.get == 70)
 
-    val novels = from(books)(b =>
-      where({
+    val b0  = books.where(_.id === laReineMargot.id).single
+    b0.genre(Genre.Culinary)
 
-        val a1 = b.genre : TypedField[Enumeration#Value]
-        val a2 = a1 : EnumExpression[Enumeration#Value]
+    books.update(b0)
 
-        val r = b.genre === Genre.Novel
-        r
-      })
-      select(b.id)
-    )
+    val b1  = books.where(_.id === laReineMargot.id).single
 
-    assert(novels.map(_.id).toSet == Set(pillarsOfTheEarth.id, laReineMargot.id))
+    assert(b1.genre.get == Genre.Culinary)
+//    val g:Genre#Value = Genre.Novel
+//    val novels = from(books)(b =>
+//      where({
+//
+////        val a1 = b.genre : TypedField[Enumeration#Value]
+////        val a2 = a1 : EnumExpression[Enumeration#Value]
+//
+//        val r = b.genre === Genre.Novel
+//        r
+//      })
+//      select(b.id)
+//    )
+//
+//    assert(novels.map(_.id).toSet == Set(pillarsOfTheEarth.id, laReineMargot.id))
   }  
 }

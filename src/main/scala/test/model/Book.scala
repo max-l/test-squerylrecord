@@ -7,14 +7,16 @@ import org.squeryl.annotations.Column
 import net.liftweb.record.field._
 
 
-object Genre extends Enumeration {
+trait Genre extends Enumeration {
   type Genre = Value
   val SciFi = Value(1, "Sci-Fi")
   val Boring = Value(2, "Boring")
   val GetRichQuickScam = Value(3, "GetRichQuickScam")
   val Novel = Value(4, "Novel")
+  val Culinary = Value(5, "Culinary")
 }
 
+object Genre extends Genre
 
 class Book extends Record[Book] with KeyedRecord[Long] {
     def meta = Book
@@ -28,7 +30,7 @@ class Book extends Record[Book] with KeyedRecord[Long] {
 
     val authorId = new LongField(this, 1234)
 
-    val genre = new EnumField(this, Genre)
+    val genre = new EnumField[Book,Genre](this, Genre)
 
     val secondaryGenre = new OptionalEnumField(this, Genre)
 
