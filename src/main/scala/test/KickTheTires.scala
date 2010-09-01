@@ -45,22 +45,15 @@ object KickTheTires extends Loggable {
 
   trait RecordTypeModeBaseOverride4MandatoryEnums extends RecordTypeMode {
 
-    implicit def enum2EnumExpr(l: EnumTypedField[Enumeration]) = {
+    implicit def enum2EnumExpr[EnumType <: Enumeration](l: MandatoryTypedField[EnumType#Value]) = {
       val n = FieldReferenceLinker.takeLastAccessedFieldReference.get
       new SelectElementReference[Enumeration#Value](n)(n.createEnumerationMapper) with  EnumExpression[Enumeration#Value]
     }
-
-
-
-//    implicit def enum2EnumExpr[E <: Enumeration](l: EnumField[_,E]) = {
-//      val n = FieldReferenceLinker.takeLastAccessedFieldReference.get
-//      new SelectElementReference[Enumeration#Value](n)(n.createEnumerationMapper) with  EnumExpression[E#Value]
-//    }
   }  
 
   object RecordTypeModeBaseOverride4OptionalEnums extends RecordTypeModeBaseOverride4MandatoryEnums {
 
-    implicit def enum2OptionEnumExpr(l: OptionalTypedField[Enumeration#Value]) = {
+    implicit def enum2EnumExpr[EnumType <: Enumeration](l: OptionalTypedField[EnumType#Value]) = {  
       val n = FieldReferenceLinker.takeLastAccessedFieldReference.get
       new SelectElementReference[Option[Enumeration#Value]](n)(n.createEnumerationOptionMapper) with  EnumExpression[Option[Enumeration#Value]]
     }
@@ -110,27 +103,36 @@ object KickTheTires extends Loggable {
 
     assert(option70.single.get == 70)
 
+//    val g:Genre#Value = Genre.Novel
+    val novels = from(books)(b =>
+      where({
+
+//        val a1 = b.genre : TypedField[Enumeration#Value]
+//        val a2 = a1 : EnumExpression[Enumeration#Value]
+
+        val r = b.genre === Genre.Novel
+        r
+      })
+      select(b)
+      orderBy(b.id)
+    ).toList
+
+    val s1 = novels.map(b => b.id).toSet
+    val s2 = Set(pillarsOfTheEarth.id, laReineMargot.id)
+
+    assert(s1 == s2)
+
+
     val b0  = books.where(_.id === laReineMargot.id).single
+
+    assert(b0.genre.get == Genre.Novel)
+
     b0.genre(Genre.Culinary)
 
     books.update(b0)
 
     val b1  = books.where(_.id === laReineMargot.id).single
 
-    assert(b1.genre.get == Genre.Culinary)
-//    val g:Genre#Value = Genre.Novel
-//    val novels = from(books)(b =>
-//      where({
-//
-////        val a1 = b.genre : TypedField[Enumeration#Value]
-////        val a2 = a1 : EnumExpression[Enumeration#Value]
-//
-//        val r = b.genre === Genre.Novel
-//        r
-//      })
-//      select(b.id)
-//    )
-//
-//    assert(novels.map(_.id).toSet == Set(pillarsOfTheEarth.id, laReineMargot.id))
+    assert(b1.genre.get == Genre.Culinary)    
   }  
 }
