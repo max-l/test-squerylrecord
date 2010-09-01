@@ -1,10 +1,22 @@
 package test.model
 
 import net.liftweb.record.{MetaRecord, Record}
-import net.liftweb.record.field.{IntField, StringField, LongField, LongTypedField}
 import net.liftweb.squerylrecord.KeyedRecord
 import net.liftweb.squerylrecord.RecordTypeMode._
 import org.squeryl.annotations.Column
+import net.liftweb.record.field._
+
+
+trait Genre extends Enumeration {
+  type Genre = Value
+  val SciFi = Value(1, "Sci-Fi")
+  val Boring = Value(2, "Boring")
+  val GetRichQuickScam = Value(3, "GetRichQuickScam")
+  val Novel = Value(4, "Novel")
+  val Culinary = Value(5, "Culinary")
+}
+
+object Genre extends Genre
 
 class Book private () extends Record[Book] with KeyedRecord[Long] {
     def meta = Book
@@ -17,7 +29,11 @@ class Book private () extends Record[Book] with KeyedRecord[Long] {
     val publisherId = new LongField(this, 0)
 
     val authorId = new LongField(this, 1234)
-  
+
+    val genre = new EnumField[Book,Genre](this, Genre)
+
+    val secondaryGenre = new OptionalEnumField(this, Genre)
+
     def author = TestSchema.authors.lookup(authorId.value)
     //def publisher = TestSchema.publishers.lookup(publisherId)
 

@@ -18,4 +18,3 @@ class Publisher private () extends Record[Publisher] with KeyedRecord[Long] {
 }
 
 object Publisher extends Publisher with MetaRecord[Publisher]
-
