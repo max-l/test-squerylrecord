@@ -1,15 +1,14 @@
 package test
 
 import java.sql.SQLException
+import java.util.Calendar
 import org.squeryl.adapters.H2Adapter
 import net.liftweb.common.{Empty, Log4j, Loggable}
 import net.liftweb.mapper.{DB, DefaultConnectionIdentifier, StandardDBVendor}
 import model.{Author, Book, TestSchema}
-import bootstrap.liftweb.RecordMetaDataFactoryOverride
 import org.squeryl.dsl.ast.SelectElementReference
 import org.squeryl.internals.{FieldReferenceLinker, FieldMetaData}
-import org.squeryl.dsl.EnumExpression
-import net.liftweb.squerylrecord.{RecordTypeMode, RecordTypeModeBase, SquerylRecord}
+import net.liftweb.squerylrecord.{RecordTypeMode, SquerylRecord}
 import net.liftweb.record.{MandatoryTypedField, OptionalTypedField, TypedField}
 import net.liftweb.record.field.{EnumField, EnumTypedField}
 
@@ -22,7 +21,6 @@ object KickTheTires extends Loggable {
     try {
       DB.defineConnectionManager(DefaultConnectionIdentifier, dbVendor)
       SquerylRecord.init(() => new H2Adapter)
-      FieldMetaData.factory = new RecordMetaDataFactoryOverride
 
       import net.liftweb.squerylrecord.RecordTypeMode._
 
@@ -43,29 +41,14 @@ object KickTheTires extends Loggable {
     }
   }
 
-  trait RecordTypeModeBaseOverride4MandatoryEnums extends RecordTypeMode {
-
-    implicit def enum2EnumExpr[EnumType <: Enumeration](l: MandatoryTypedField[EnumType#Value]) = {
-      val n = FieldReferenceLinker.takeLastAccessedFieldReference.get
-      new SelectElementReference[Enumeration#Value](n)(n.createEnumerationMapper) with  EnumExpression[Enumeration#Value]
-    }
-  }  
-
-  object RecordTypeModeBaseOverride4OptionalEnums extends RecordTypeModeBaseOverride4MandatoryEnums {
-
-    implicit def enum2EnumExpr[EnumType <: Enumeration](l: OptionalTypedField[EnumType#Value]) = {  
-      val n = FieldReferenceLinker.takeLastAccessedFieldReference.get
-      new SelectElementReference[Option[Enumeration#Value]](n)(n.createEnumerationOptionMapper) with  EnumExpression[Option[Enumeration#Value]]
-    }
-  }
-
   def go {
     import TestSchema._
-    //import net.liftweb.squerylrecord.RecordTypeMode._
-    import RecordTypeModeBaseOverride4OptionalEnums._
+    import net.liftweb.squerylrecord.RecordTypeMode._
     import test.model._
+
+    val now = Calendar.getInstance
     
-    val kenFollet = Author.createRecord.age(59).name("Ken Follet")
+    val kenFollet = Author.createRecord.age(59).name("Ken Follet").birthday(Some(now))
     authors.insert(kenFollet)
 
     val alexandreDumas = Author.createRecord.age(70).name("Alexandre Dumas")
@@ -79,6 +62,17 @@ object KickTheTires extends Loggable {
 
     //commit the inserts, so we can inspect the DB if things go wrong :
     DB.currentConnection.foreach(_.connection.commit)
+
+    val c1 = Calendar.getInstance
+    c1.setTime(now.getTime)
+    c1.add(Calendar.HOUR_OF_DAY, -1)
+    val c2 = Calendar.getInstance
+    c2.setTime(now.getTime)
+    c2.add(Calendar.HOUR_OF_DAY, 1)
+
+    val qKenFolletByBirthday = from(authors)(a => where(a.birthday between(Some(c1.getTime), Some(c2.getTime))) select(a))
+
+    assert(qKenFolletByBirthday.single.name.value == "Ken Follet")
     
     val qLaReineLargot = from(books, authors)((b,a) =>
       where((a.name.value like "Alex%") and b.authorId === a.id)
@@ -105,14 +99,7 @@ object KickTheTires extends Loggable {
 
 //    val g:Genre#Value = Genre.Novel
     val novels = from(books)(b =>
-      where({
-
-//        val a1 = b.genre : TypedField[Enumeration#Value]
-//        val a2 = a1 : EnumExpression[Enumeration#Value]
-
-        val r = b.genre === Genre.Novel
-        r
-      })
+      where(b.genre === Genre.Novel)
       select(b)
       orderBy(b.id)
     ).toList
