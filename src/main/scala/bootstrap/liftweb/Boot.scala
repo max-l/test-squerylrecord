@@ -1,5 +1,6 @@
 package bootstrap.liftweb
 
+import _root_.test.model.TestSchema
 import scala.util.control.Exception.ultimately
 import net.liftweb.common._
 import net.liftweb.util.{LoanWrapper, Props}
@@ -33,8 +34,15 @@ class Boot {
 
     SquerylRecord.init(() => new H2Adapter)
 
-      println("name of Author.name is " + test.model.Author.name.name)
+    DB.use(DefaultConnectionIdentifier) { _ =>
+      org.squeryl.Session.currentSession.setLogger(msg => msg)
+      println("-------------------")
+      TestSchema.drop
+      println("+++++++++++++++++++")
+      TestSchema.create
+    }
 
+    println("name of Author.name is " + test.model.Author.name.name)
 
     // where to search snippet
     LiftRules.addToPackages("test")
