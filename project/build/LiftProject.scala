@@ -7,16 +7,19 @@ class LiftProject(info: ProjectInfo) extends DefaultWebProject(info) {
     //val scalatools_snapshot = "Scala Tools Snapshot" at "http://scala-tools.org/repo-snapshots/"
     //val scalatools_release = "Scala Tools Snapshot" at "http://scala-tools.org/repo-releases/"
 
-    val liftVersion = "2.1-SNAPSHOT"
+    val liftVersion = "2.2-M1"
 
     override def libraryDependencies = Set(
         "net.liftweb" %% "lift-webkit" % liftVersion % "compile->default",
         "net.liftweb" %% "lift-record" % liftVersion % "compile->default",
         "net.liftweb" %% "lift-squeryl-record" % liftVersion % "compile->default",
-        "org.squeryl" %% "squeryl" % "0.9.4beta8-enums" % "compile->runtime",
+        "org.squeryl" %% "squeryl" % "0.9.4-RC2-4lift2.1" % "compile->runtime",
         "joda-time" % "joda-time" % "1.6",
         "org.mortbay.jetty" % "jetty" % "6.1.22" % "test->default",
         "com.h2database" % "h2" % "1.2.121",
-        "cglib" % "cglib-nodep" % "2.2"
+        "cglib" % "cglib-nodep" % "2.2",
+        
+        "log4j" % "log4j" % "1.2.16",
+	"org.slf4j" % "slf4j-log4j12" % "1.6.1"
     ) ++ super.libraryDependencies
 }
