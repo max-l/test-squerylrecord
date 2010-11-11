@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="scala" name="Scala">
+      <configuration>
+        <option name="compilerLibraryLevel" value="Global" />
+        <option name="compilerLibraryName" value="Scala2.8.0" />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/scala">
+      <sourceFolder url="file://$MODULE_DIR$/scala/test" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/scala/bootstrap" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/webapp" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="compile" level="project" />
+    <orderEntry type="library" exported="" name="lib2" level="project" />
+    <orderEntry type="library" exported="" name="test" level="project" />
+  </component>
+</module>
+

@@ -10,4 +10,6 @@ lib_managed*
 .idea/uiDesigner.xml
 .idea/dictionaries/*
 .idea/copyright/*
+*.db
+*~
 out*

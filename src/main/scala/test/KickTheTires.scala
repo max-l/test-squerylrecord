@@ -63,9 +63,15 @@ object KickTheTires extends Loggable {
     
     val laReineMargot = Book.createRecord.name("La Reine Margot").authorId(alexandreDumas.id).genre(Genre.Novel)
     books.insert(laReineMargot)
-
+    
     //commit the inserts, so we can inspect the DB if things go wrong :
     DB.currentConnection.foreach(_.connection.commit)
+
+    // check that the field name is set after loading an object:
+    val loaded = books.lookup(laReineMargot.id)
+    assert(loaded.get.name.name == laReineMargot.name.name, "Field names do not match: " + loaded.get.name.name +
+      " and " + laReineMargot.name.name)
+
 
     val c1 = Calendar.getInstance
     c1.setTime(now.getTime)
